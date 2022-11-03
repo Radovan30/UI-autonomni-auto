@@ -1,6 +1,6 @@
 // trida controls - ovladani auta
 class Controls {
-    // konstruktor nastaveni pohybu na false
+    // konstruktor nastaveni pohybu -> false
     constructor() {
         this.forward = false;
         this.left = false;
@@ -11,7 +11,7 @@ class Controls {
     }
 
     // # -> privatni metoda
-    // zaznamenani udalosti pohybu na klavesnici na true 
+    // zaznamenani udalosti pohybu na klavesnici a zmena -> true 
     #addKeyboardListeners() {
         document.onkeydown = (event) => {
             switch (event.key) {
