@@ -28,7 +28,8 @@ class Controls {
                     this.reverse = true;
                     break;
             }
-            console.table(this);
+            //debug
+            //console.table(this);
         }
         // zaznamenani udalosti pohybu na klavesnici na false 
         document.onkeyup = (event) => {
@@ -50,7 +51,8 @@ class Controls {
                     console.log('ArrowDown');
                     break;
             }
-            console.table(this);
+            //debug
+            //console.table(this);
         }
     }
 
