@@ -23,7 +23,7 @@ class Car {
         this.#move()
     }
     
-    // posun auta, rychlosti a akcelerace
+    // posun auta, rychlost a akcelerace
     #move() {
         if ( this.controls.forward ) {
             this.speed += this.acceleration;
