@@ -26,7 +26,7 @@ class Road {
         ];
     }
 
-    // zobrazeni u prostred pruhu
+    // zobrazeni uprostred pruhu
     getLaneCenter( laneIndex ) {
         const laneWidth = this.width / this.laneCount;
         return this.left + laneWidth / 2 +
@@ -46,7 +46,7 @@ class Road {
             );
             // prostredni pruhy budou rozdeleny po 20px -> 20 barva a 20 mezera
             context.setLineDash( [ 20, 20 ] );
-            //vykresleni pruhu od zhora dolu
+            // vykresleni pruhu od zhora dolu
             context.beginPath();
             context.moveTo( x, this.top );
             context.lineTo( x, this.bottom );
