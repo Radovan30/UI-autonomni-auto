@@ -1,4 +1,3 @@
-
 // trida auto
 class Car {
 
@@ -14,15 +13,53 @@ class Car {
         this.acceleration = 0.2;
         this.maxSpeed = 3;
         this.friction = 0.05;
-        this.angel = 0;
+        this.angle = 0;
 
+        this.sensor = new Sensor( this );
         this.controls = new Controls();
     }
 
-    update() {
-        this.#move()
+    update( roadBorders ) {
+        if ( !this.damaged ) {
+            this.#move();
+            this.polygon = this.#createPolygon();
+            this.damaged = this.#assessDamage( roadBorders );
+        }
+        this.sensor.update( roadBorders );
     }
-    
+
+    #assessDamage( roadBorders ) {
+        for ( let i = 0; i < roadBorders.length; i++ ) {
+            if ( polysIntersect( this.polygon, roadBorders[ i ] ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    #createPolygon() {
+        const points = [];
+        const rad = Math.hypot( this.width, this.height ) / 2;
+        const alpha = Math.atan2( this.width, this.height );
+        points.push( {
+            x: this.x - Math.sin( this.angle - alpha ) * rad,
+            y: this.y - Math.cos( this.angle - alpha ) * rad
+        } );
+        points.push( {
+            x: this.x - Math.sin( this.angle + alpha ) * rad,
+            y: this.y - Math.cos( this.angle + alpha ) * rad
+        } );
+        points.push( {
+            x: this.x - Math.sin( Math.PI + this.angle - alpha ) * rad,
+            y: this.y - Math.cos( Math.PI + this.angle - alpha ) * rad
+        } );
+        points.push( {
+            x: this.x - Math.sin( Math.PI + this.angle + alpha ) * rad,
+            y: this.y - Math.cos( Math.PI + this.angle + alpha ) * rad
+        } );
+        return points;
+    }
+
     // posun auta, rychlost a akcelerace
     #move() {
         if ( this.controls.forward ) {
@@ -54,23 +91,40 @@ class Car {
             const flip = this.speed > 0 ? 1 : -1;
             // posun do leva/prava
             if ( this.controls.left ) {
-                this.angel += 0.03;
+                this.angle += 0.03 * flip;
             }
             if ( this.controls.right ) {
-                this.angel -= 0.03;
+                this.angle -= 0.03 * flip;
             }
         }
 
-        this.x -= Math.sin( this.angel ) * this.speed;
-        this.y -= Math.cos( this.angel ) * this.speed;
+        this.x -= Math.sin( this.angle ) * this.speed;
+        this.y -= Math.cos( this.angle ) * this.speed;
     }
 
     // vykresleni auta do canvas
     draw( context ) {
+        if ( this.damaged ) {
+            context.fillStyle = "gray";
+        } else {
+            context.fillStyle = "black";
+        }
+
+        context.beginPath();
+        context.moveTo( this.polygon[ 0 ].x, this.polygon[ 0 ].y );
+        for ( let i = 1; i < this.polygon.length; i++ ) {
+            context.lineTo( this.polygon[ i ].x, this.polygon[ i ].y );
+        }
+        context.fill();
+
+        this.sensor.draw( context );
+
+
+        /*
         context.save();
         // otaceni auta dle osy
         context.translate( this.x, this.y );
-        context.rotate( -this.angel );
+        context.rotate( -this.angle );
         // vykresleni
         context.beginPath();
         context.rect(
@@ -83,5 +137,11 @@ class Car {
         context.fill();
 
         context.restore();
+        // auto vykresli vlastni sensor
+        this.sensor.draw( context );
+        
+        */
+        
     }
 }
+

@@ -13,7 +13,8 @@ const car = new Car(road.getLaneCenter(3), 100, 30, 50);
 animate();
 
 function animate() {
-    car.update();
+    //detekovani hranic senzoru
+    car.update(road.borders);
 
     canvas.height = window.innerHeight;
     
@@ -23,5 +24,7 @@ function animate() {
     
     road.draw( context );
     car.draw( context );
+    
+    ctx.restore();
     requestAnimationFrame(animate);
 }   
