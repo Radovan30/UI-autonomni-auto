@@ -36,19 +36,15 @@ class Controls {
             switch (event.key) {
                 case 'ArrowLeft':
                     this.left = false;
-                    console.log('ArrowLeft');
                     break;
                 case 'ArrowRight':
                     this.right = false;
-                    console.log('ArrowRight');
                     break;
                 case 'ArrowUp':
                     this.forward = false;
-                    console.log('ArrowUp');
                     break;
                 case 'ArrowDown':
                     this.reverse = false;
-                    console.log('ArrowDown');
                     break;
             }
             //debug

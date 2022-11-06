@@ -6,7 +6,7 @@ class Sensor {
         this.rayCount = 5; // 5 senzory
         this.rayLength = 150; // 100px dlouhe
         this.raySpread = Math.PI / 2; // vypocet uhlu jak jsou od sebe
-
+        
         this.rays = [];
         this.readings = []; // cteni hodnod pro hranice
     }
@@ -19,7 +19,7 @@ class Sensor {
         this.readings = [];
 
         // nastaveni hranic jako parametr
-        for ( let i = 0; i < this.length; i++ ) {
+        for ( let i = 0; i < this.rays.length; i++ ) {
             this.readings.push(
                 this.#getReadings( this.rays[ i ], roadBorders )
             );
@@ -60,7 +60,7 @@ class Sensor {
             const rayAngle = lerp(
                 this.raySpread / 2,
                 - this.raySpread / 2,
-                i / ( this.rayCount - 1 )
+                this.rayCount == 1 ? 0.5 : i / ( this.rayCount - 1 )
             ) + this.car.angle;
 
             // vypocet bodu pro senzor
@@ -82,8 +82,9 @@ class Sensor {
         for ( let i = 0; i < this.rayCount; i++ ) {
             let end = this.rays[ i ][ 1 ];
             if ( this.readings[ i ] ) {
-                end=this.readings[ i ];
+                end = this.readings[ i ];
             }
+
             context.beginPath();
             context.lineWidth = 2;
             context.strokeStyle = "yellow";
@@ -96,13 +97,13 @@ class Sensor {
                 end.y
             );
             context.stroke();
-            
+
             context.beginPath();
             context.lineWidth = 2;
             context.strokeStyle = "black";
             context.moveTo(
-                this.rays[ i ][ 0 ].x,
-                this.rays[ i ][ 0 ].y
+                this.rays[ i ][ 1 ].x,
+                this.rays[ i ][ 1 ].y
             );
             context.lineTo(
                 end.x,
