@@ -2,7 +2,7 @@
 class NeuralNetwork {
     constructor ( neuronCounts ) {
         this.levels = [];
-        for ( let i = 0; i < neuronCounts.length; i++ ) {
+        for ( let i = 0; i < neuronCounts.length - 1; i++ ) {
             this.levels.push( new Level(
                 neuronCounts[ i ], neuronCounts[ i + 1 ]
             ) );
@@ -10,26 +10,23 @@ class NeuralNetwork {
     }
 
     // dopredny algoritmus pro dane vstupy a prvni urovni site
-    static feerForward( givenInputs, network ) {
-        let outputs = Level.feerForward(
+    static feedForward( givenInputs, network ) {
+        let outputs = Level.feedForward(
             // vola prvni uroven pro vytvoreni vystupu
             givenInputs, network.levels[ 0 ] );
-
         // cyklus pro prochazeni zbyvajicich urovni a vrati vyslednou hodnotu do 2 urovne
         for ( let i = 1; i < network.levels.length; i++ ) {
-            outputs = Level.feerForward(
+            outputs = Level.feedForward(
                 outputs,
                 network.levels[ i ] );
         }
         return outputs;
     }
-
 }
 
 
 // vytvoreni tridy neuronove site 1 urovne
 class Level {
-
     //konstruktor vrstvy pro vstupy a vystupy
     constructor ( inputCount, outputCount ) {
         // vstupni pole
@@ -44,7 +41,6 @@ class Level {
         for ( let i = 0; i < inputCount; i++ ) {
             this.weights[ i ] = new Array( outputCount );
         }
-
         // nastaveni nahodnou hotnot vaham
         Level.#randomize( this );
     }
@@ -59,13 +55,13 @@ class Level {
         }
 
         // cyklus pro kontrolu otaceni auta
-        for ( let i = 0; level.biases.length; i++ ) {
+        for ( let i = 0; i < level.biases.length; i++ ) {
             level.biases[ i ] = Math.random() * 2 - 1;
         }
     }
 
     // vypocet hodnot dopredneho algoritmu
-    static feerForward( givenInputs, level ) {
+    static feedForward( givenInputs, level ) {
         // projdeme vsechny urovne vstupu
         for ( let i = 0; i < level.inputs.length; i++ ) {
             // nastavim je na hodnoty ze senzoru
@@ -75,7 +71,7 @@ class Level {
         // cyklus pro ziskani vystupu
         for ( let i = 0; i < level.outputs.length; i++ ) {
             // soucet mezi hodnotou vstupu a vahou
-            let sum = 0;
+            let sum = 0
             for ( let j = 0; j < level.inputs.length; j++ ) {
                 sum += level.inputs[ j ] * level.weights[ j ][ i ];
             }
