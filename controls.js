@@ -1,13 +1,21 @@
 // trida controls - ovladani auta
 class Controls {
-    // konstruktor nastaveni pohybu -> false
-    constructor() {
+    // konstruktor nastaveni pohybu -> false, type pro klic auta
+    constructor(type) {
         this.forward = false;
         this.left = false;
         this.right = false;
         this.reverse = false;
 
-        this.#addKeyboardListeners();
+        // urceni specivikace pro dane auto
+        switch ( type ) {
+            case "KEYS":
+            this.#addKeyboardListeners();
+                break;
+            case "DUMMY":
+                this.forward = true;
+                break;
+        }
     }
 
     // # -> privatni metoda

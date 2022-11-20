@@ -1,8 +1,8 @@
 // trida auto
 class Car {
 
-    // construktor pro auto, nastavi souradnice a velikost auta
-    constructor ( x, y, width, height ) {
+    // construktor pro auto, nastavi souradnice, velikost auta, druh auta (KEYS) a maximalni rychlost
+    constructor ( x, y, width, height, controlType, maxSpeed = 3 ) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -11,26 +11,39 @@ class Car {
         // nastaveni rychlosti a akcelerace
         this.speed = 0;
         this.acceleration = 0.2;
-        this.maxSpeed = 3;
+        this.maxSpeed = maxSpeed;
         this.friction = 0.05;
         this.angle = 0;
 
-        this.sensor = new Sensor( this );
-        this.controls = new Controls();
+        // spusti senzory autu, ktere nejsou pod klicem "DUMMY"
+        if ( controlType != "DUMMY" ) {
+            this.sensor = new Sensor( this );     
+        }
+        this.controls = new Controls( controlType );
     }
 
-    update( roadBorders ) {
+    // traffic v ramci auta posuzuje skody u senzoru
+    update( roadBorders, traffic) {
         if ( !this.damaged ) {
             this.#move();
             this.polygon = this.#createPolygon();
-            this.damaged = this.#assessDamage( roadBorders );
+            this.damaged = this.#assessDamage( roadBorders, traffic );
         }
-        this.sensor.update( roadBorders );
+        // po aktualizaci senzoru zjistime zda existuji a potom aktualizujeme, posuzuje skody vnimanim provozu
+        if ( this.sensor ) {
+            this.sensor.update( roadBorders, traffic );
+        }
     }
     
-    #assessDamage( roadBorders ) {
+    // znodnotnime poskozeni u silnicni hranice a u auta
+    #assessDamage( roadBorders, traffic ) {
         for ( let i = 0; i < roadBorders.length; i++ ) {
             if ( polysIntersect( this.polygon, roadBorders[ i ] ) ) {
+                return true;
+            }
+        }
+        for ( let i = 0; i < traffic.length; i++ ) {
+            if ( polysIntersect( this.polygon, traffic[ i ].polygon ) ) {
                 return true;
             }
         }
@@ -104,12 +117,12 @@ class Car {
         this.y -= Math.cos( this.angle ) * this.speed;
     }
 
-    // vykresleni auta do canvas
-    draw( context ) {
+    // vykresleni auta do canvas a barva aut
+    draw( context, color ) {
         if ( this.damaged ) {
             context.fillStyle = "gray";
         } else {
-            context.fillStyle = "black";
+            context.fillStyle = color;
         }
         context.beginPath();
         context.moveTo( this.polygon[ 0 ].x, this.polygon[ 0 ].y );
@@ -118,7 +131,10 @@ class Car {
         }
         context.fill();
 
-        this.sensor.draw( context );
+        // jestli zde je senzor tak jej vykreslime
+        if ( this.sensor ) {
+            this.sensor.draw( context );
+        }
 
         /*
         context.save();
