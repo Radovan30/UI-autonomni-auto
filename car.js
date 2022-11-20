@@ -14,16 +14,24 @@ class Car {
         this.maxSpeed = maxSpeed;
         this.friction = 0.05;
         this.angle = 0;
+        this.damaged = false;
+
+        this.useBrain = controlType == "AI";
 
         // spusti senzory autu, ktere nejsou pod klicem "DUMMY"
         if ( controlType != "DUMMY" ) {
-            this.sensor = new Sensor( this );     
+            this.sensor = new Sensor( this );
+            // prirazeni neuronove site
+            this.brain = new NeuralNetwork(
+                // urcime pole neuronu, 1 vrsta pocet bodu senzoru(this.sensor.rayCount), 2 vsrtva skryta(6), 3 vrstva vystupni(4)
+                [ this.sensor.rayCount, 6, 4 ]
+            );
         }
         this.controls = new Controls( controlType );
     }
 
     // traffic v ramci auta posuzuje skody u senzoru
-    update( roadBorders, traffic) {
+    update( roadBorders, traffic ) {
         if ( !this.damaged ) {
             this.#move();
             this.polygon = this.#createPolygon();
@@ -32,9 +40,23 @@ class Car {
         // po aktualizaci senzoru zjistime zda existuji a potom aktualizujeme, posuzuje skody vnimanim provozu
         if ( this.sensor ) {
             this.sensor.update( roadBorders, traffic );
+            // vybrani offsetu x,y namerenych hodnot a vytvoreni mapy 
+            const offsets = this.sensor.readings.map(
+                s => s == null ? 0 : 1 - s.offset
+            );
+
+            // priradi hodnoty neuronove siti
+            const outputs = NeuralNetwork.feedForward( offsets, this.brain );
+         
+            if ( this.useBrain ) {
+                this.controls.forward = outputs[ 0 ];
+                this.controls.left = outputs[ 1 ];
+                this.controls.right = outputs[ 2 ];
+                this.controls.reverse = outputs[ 3 ];
+            }
         }
     }
-    
+
     // znodnotnime poskozeni u silnicni hranice a u auta
     #assessDamage( roadBorders, traffic ) {
         for ( let i = 0; i < roadBorders.length; i++ ) {
@@ -49,7 +71,7 @@ class Car {
         }
         return false;
     }
-    
+
     // vytvoreni polygonu na detekovani kolizi
     #createPolygon() {
         const points = [];
@@ -72,7 +94,7 @@ class Car {
             y: this.y - Math.cos( Math.PI + this.angle + alpha ) * rad
         } );
         return points;
-        
+
     }
 
     // posun auta, rychlost a akcelerace
@@ -87,8 +109,8 @@ class Car {
         if ( this.speed > this.maxSpeed ) {
             this.speed = this.maxSpeed;
         }
-        if ( this.speed < - this.maxSpeed / 2 ) {
-            this.speed = - this.maxSpeed / 2;
+        if ( this.speed <- this.maxSpeed / 2 ) {
+            this.speed =- this.maxSpeed / 2;
         }
 
         if ( this.speed > 0 ) {
@@ -101,7 +123,7 @@ class Car {
             this.speed = 0;
         }
 
-        if ( this.speed !== 0 ) {
+        if ( this.speed != 0 ) {
             // jestli auto stoji tak se neotoci
             const flip = this.speed > 0 ? 1 : -1;
             // posun do leva/prava
@@ -157,7 +179,7 @@ class Car {
         this.sensor.draw( context );
         
         */
-        
+
     }
 }
 
