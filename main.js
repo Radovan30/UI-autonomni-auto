@@ -18,7 +18,7 @@ const traffic = [
 
 animate();
 
-function animate() {
+function animate( time ) {
     // cyklus ktery projde vsemi auty v provozu
     for ( let i = 0; i < traffic.length; i++ ) {
         traffic[ i ].update( road.borders, [] );
@@ -26,6 +26,7 @@ function animate() {
     //detekovani hranic senzoru
     car.update( road.borders, traffic );
 
+    // vykresleni pole trate a pole pro neuronovou sit
     carCanvas.height = window.innerHeight;
     networkCanvas.height = window.innerHeight;
 
@@ -42,5 +43,7 @@ function animate() {
 
     carContext.restore();
 
+    networkContext.lineDashOffset = -time / 50;
+    Visualizer.drawNetwork( networkContext, car.brain );
     requestAnimationFrame( animate );
 }   

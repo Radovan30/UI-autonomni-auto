@@ -24,7 +24,7 @@ class Car {
             // prirazeni neuronove site
             this.brain = new NeuralNetwork(
                 // urcime pole neuronu, 1 vrsta pocet bodu senzoru(this.sensor.rayCount), 2 vsrtva skryta(6), 3 vrstva vystupni(4)
-                [ this.sensor.rayCount, 6, 4 ]
+                [ this.sensor.rayCount, 7, 4  ]
             );
         }
         this.controls = new Controls( controlType );
